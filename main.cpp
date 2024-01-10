@@ -155,20 +155,13 @@ class ReadCSV{
 
 
 int main(){
-
-
-    //[[2.0, 5.0], [8.0, 10.0], [15.0, 20.0]]
-
-    //vector<double> original_data = {2.0, 5.0, 8.0, 10.0, 15.0};
-    //vector<double> normalized_data = minMaxNormalization(original_data);
-    //printv(original_data);
-    //cout<<"new normalization:"<<endl; 
-    //printv(normalized_data);
-
-
+    
+    //read file csv
     //const string filename = "datasets/readme.csv";
     const string filename = "datasets/house_price_data.csv";
     ReadCSV data(filename);
+    
+    //get rows
     vector<vector<int>> filas = data.getRows();  
    
     cout<<"-----template:-------"<<endl;
@@ -176,19 +169,23 @@ int main(){
     cout<<"-----end template------"<<endl;
     cout<<"indice especifico: filas[0][1]: "<<filas[0][1]<<endl; // 3 
 
-
+    //get columns
     vector<vector<int>> columnas = data.getColumns();  
     cout<<"columnas[0]: "<<endl;
     printv(columnas[0]); 
     cout<<"columnas[0][1]: "<<columnas[0][1]<<endl; //1600
+    
     //check typeid
     cout<<"typeid(columnas[0][1]): "<< typeid(columnas[0][1]).name()<<endl; //i
+   
+    //suma
     int sumaCol = 0; 
     for(int i = 0; i < columnas[0].size(); i++){
             sumaCol = sumaCol + columnas[0][i];
         }
     cout<<"suma de enteros columnas[0]: "<<sumaCol<<endl;
 
+    //normalization
     vector<double> normalized_col = minMaxNormalization(columnas[0]);
     cout<<"normalizer_col"<<endl;
     printv(normalized_col);
