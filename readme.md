@@ -1,17 +1,6 @@
-# DeepTensor
+# deepTensor
 
-Simple framework educativo de deep learning
-
-macOS M1
-
-
-
-
-
-
-
-
-
+deepTensor is a C++ tool designed for matrix operations using Apple’s Accelerate framework, which optimizes performance on the CPU. If you want to maximize your CPU's potential in your project, choose deepTensor.
 
 
 
