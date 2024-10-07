@@ -5,7 +5,7 @@ deepTensor is a C++ tool designed for matrix operations using Apple’s Accelera
 
 ## Compile
 ```
-g++ -o test src/main.cpp src/deeptensor.cpp -I include
+g++ -o test src/main.cpp -I include -lcblas 
 ```
 
 

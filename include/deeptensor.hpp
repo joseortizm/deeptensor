@@ -32,7 +32,32 @@ template<typename E> class Lista{
   virtual E getValor() = 0; //retorna valor en pos actual
   virtual void setValor(E elemento) = 0; //modifica valor de pos actual
   virtual E eliminar() = 0; //elimina, libera memoria y retorna el eliminado
+
+  virtual void imprimirListas() = 0;
+  virtual E getLista(int i) = 0;
+
+
 };
+
+
+template<typename T> class Value{
+  private:
+
+  public:
+  //constructor
+  Value(){}
+  ~Value(){}
+
+  virtual void set(int row, int col, T value) = 0; 
+  virtual  T get(int row, int col) const = 0;      
+  virtual void print() const = 0;
+  virtual pair<int, int> shape() const = 0;        
+
+};
+
+
+
+
 
 
 #include "../src/deeptensor.cpp"
