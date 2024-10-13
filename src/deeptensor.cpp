@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <Accelerate/Accelerate.h>
+#include <typeinfo>
 
 
 using namespace std;
@@ -103,14 +104,16 @@ template<typename T> class Tensor:public Value<T>{
   vector<vector<T> > data;
   //todo: atributos:
   //this->tensor = data;
-  //int row_ = 0;
-  //int col_ = 0;
+  int row_;
+  int col_; 
 
   public:
 
     // Constructor
     Tensor(int rows, int cols) {
         data.resize(rows, vector<T>(cols)); // init matrix 
+        this->row_ = data.size();
+        this->col_ = data[0].size();
     }
     // Destructor
     ~Tensor() {}
@@ -198,8 +201,47 @@ template<typename T> class Tensor:public Value<T>{
         }
         cout <<endl;
       }
-       
+
+      //check attributes:
+      cout<<"check attributes:"<<endl;
+      cout<<this->row_<<endl;
+      cout<<this->col_<<endl; 
+
+
     }
+
+
+    //https://developer.apple.com/documentation/accelerate/1513084-cblas_dscal
+
+    void sc_mul(double other){
+
+      cout<<"scalar:"<<other<<endl;
+      int rowxcol = this->row_ * this->col_;
+      cout<<"rowxcol:"<<rowxcol<<endl;
+      //vector<double> result(rowxcol, 0.0);
+
+      //vector<vector<T> > output = data; 
+      cout<<"typeid(data).name(): "<<typeid(data[0][1]).name()<<endl; //vector
+
+      for (int i = 0; i < this->row_; ++i) {
+        cblas_dscal(this->col_, other, data[i].data(), 1);
+      }
+
+      
+        for (size_t i = 0; i < data.size(); ++i) { 
+            for (size_t j = 0; j < data[i].size(); ++j) { 
+                cout << data[i][j] << " "; 
+            }
+            cout << endl;
+        }
+      
+
+
+
+
+
+    }
+
     
 
 };

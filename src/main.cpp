@@ -69,10 +69,25 @@ int main() {
 
   //TODO:
   //A->cambiarTensor(B);  
-
-
+ 
   delete A;
   delete B;
+
+ double nScalar = 3.0;
+ Tensor<double>* D = new Tensor<double>(2, 3);
+ D->set(0, 0, 6);
+ D->set(0, 1, 5);
+ D->set(0, 2, 4);
+ D->set(1, 0, 3);
+ D->set(1, 1, 2);
+ D->set(1, 2, 1); 
+ D->sc_mul(nScalar);
+
+
+  delete D;
+
+
+
 
   return 0;
 
