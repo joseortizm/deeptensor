@@ -57,15 +57,21 @@ int main() {
 
   cout<<"A:"<<endl;
   A->print();
+  pair<int, int> shapeA = A->shape();
+  cout << "("<<shapeA.first<< ", "<<shapeA.second<<")"<< endl;
+  
   cout<<"B:"<<endl;
   B->print();
+  pair<int, int> shapeB = B->shape();
+  cout << "("<<shapeB.first<< ", "<<shapeB.second<<")"<< endl;
 
   cout<<"A*B:"<<endl;
   A->dot(B);
 
   //OK:
-  //cout<<A->get(0,1)<<endl;
-  //cout<<B->get(2,1)<<endl; 
+  cout<<"get:"<<endl; 
+  cout<<A->get(0,1)<<endl;
+  cout<<B->get(2,1)<<endl; 
 
   //TODO:
   //A->cambiarTensor(B);  
@@ -73,15 +79,20 @@ int main() {
   delete A;
   delete B;
 
- double nScalar = 3.0;
- Tensor<double>* D = new Tensor<double>(2, 3);
- D->set(0, 0, 6);
- D->set(0, 1, 5);
- D->set(0, 2, 4);
- D->set(1, 0, 3);
- D->set(1, 1, 2);
- D->set(1, 2, 1); 
- D->sc_mul(nScalar);
+  double nScalar = 3.0;
+  Tensor<double>* D = new Tensor<double>(2, 3);
+  D->set(0, 0, 6);
+  D->set(0, 1, 5);
+  D->set(0, 2, 4);
+  D->set(1, 0, 3);
+  D->set(1, 1, 2);
+  D->set(1, 2, 1); 
+  cout<<"D:"<<endl;
+  D->print();
+  cout<<"Escalar:"<<endl;
+  cout<<nScalar<<endl;
+  cout<<"D*nScalar:"<<endl;
+  D->sc_mul(nScalar);
 
 
   delete D;

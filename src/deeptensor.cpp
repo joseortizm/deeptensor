@@ -2,7 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <Accelerate/Accelerate.h>
-#include <typeinfo>
+//#include <typeinfo>
+#include <type_traits>
+
 
 
 using namespace std;
@@ -100,60 +102,55 @@ template<typename E> class ListaArreglo:public Lista<E>{
 template<typename T> class Tensor:public Value<T>{
 
   private:
-
-  vector<vector<T> > data;
-  //todo: atributos:
-  //this->tensor = data;
-  int row_;
-  int col_; 
+    vector<vector<T> > data;
+    int row_;
+    int col_; 
 
   public:
 
     // Constructor
     Tensor(int rows, int cols) {
-        data.resize(rows, vector<T>(cols)); // init matrix 
+        data.resize(rows, vector<T>(cols)); // init : vector T with vectors of T
         this->row_ = data.size();
         this->col_ = data[0].size();
     }
     // Destructor
     ~Tensor() {}
 
+    //TODOs: set y get por ahora dejar asi su validacion, si se desea hacer algun cambio modificarlo a tiempo de compilacion sino dejar asi por ahora.
     void set(int row, int col, T value) {
-        if (row < 0 || row >= data.size() || col < 0 || col >= data[row].size()) {
-            throw out_of_range("Índice fuera de rango");
+        if (row < 0 || row >= this->row_ || col < 0 || col >= data[row].size()) {
+            throw out_of_range("Índice fuera de rango"); //tiempo de ejecucion
         }
         data[row][col] = value; 
     }
 
     T get(int row, int col) const {
-        if (row < 0 || row >= data.size() || col < 0 || col >= data[row].size()) {
-            throw out_of_range("Índice fuera de rango");
+        if (row < 0 || row >= this->row_ || col < 0 || col >= data[row].size()) {
+            throw out_of_range("Índice fuera de rango"); //example (en tiempo de ejec): libc++abi: terminating with uncaught exception of type std::out_of_range: Índice fuera de rango
         }
         return data[row][col]; 
     }
 
     void print() const {
-        for (size_t i = 0; i < data.size(); ++i) { 
-            for (size_t j = 0; j < data[i].size(); ++j) { 
-                cout << data[i][j] << " "; 
+        for (size_t i = 0; i < this->row_; ++i) { 
+            for (size_t j = 0; j < this->data[i].size(); ++j) { 
+                cout << this->data[i][j] << " "; 
             }
             cout << endl;
         }
     }
 
     pair<int, int> shape() const { 
-      //this->row_ = data.size();todo
-      //this->col_ = data[0].size();todo
-      return make_pair(data.size(), data.empty() ? 0 : data[0].size());
+      return make_pair(this->row_, data.empty() ? 0 : this->col_);
     }
 
-    // TODO cambiarTensor
+  // TODO cambiarTensor:definir si me puede servir para algo
   void cambiarTensor(Tensor<float>* tensor) {
-      // Modifica el tensor, por ejemplo, estableciendo un valor
       // Ejemplo usando el tensor A y B. Para el caso de modificar valor probablemente sea solo A->cambiarTensor() y/o A->cambiarTensor(XXXX)
-      tensor->set(0, 0, 1.5f);
-      tensor->set(1, 0, 2.5f);
-      tensor->set(2, 0, 3.5f);
+      tensor->set(0, 0, 1.5);
+      tensor->set(1, 0, 2.5);
+      tensor->set(2, 0, 3.5);
       cout<<"data.size() of A (row):"<<data.size()<<endl; //
       cout<<"print of cambiarTensor:"<<endl;
       tensor->print();
@@ -166,81 +163,59 @@ template<typename T> class Tensor:public Value<T>{
       // result = X*Y 
 
       // input for cblas_dgemm 
-      int m = data.size();    // rows of X 
+      int m = this->row_;    // rows of X 
       int n = other->data[0].size(); // col of Y
-      int k = data[0].size(); // col of X (or rows of Y)
-      //cout<<"m | n | k | other[0] = "<<m<<" | "<<n<<" | "<<k<<" | "<<other->data[0][0]<<endl;
+      int k = this->col_; // col of X (or rows of Y)
       
       // flatten for cblas_dgemm
       vector<double> flatX(m*k);
       vector<double> flatY(k*n);
-      for(int i = 0; i < m; ++i) {
-        for(int j = 0; j < k; ++j) {
+      for(size_t i = 0; i < m; ++i) {
+        for(size_t j = 0; j < k; ++j) {
             flatX[i * k + j] = data[i][j];
         }
       }  
-      for(int i = 0; i < k; ++i) {
-        for(int j = 0; j < n; ++j) {
+      for(size_t i = 0; i < k; ++i) {
+        for(size_t j = 0; j < n; ++j) {
             flatY[i * n + j] = other->data[i][j];
         }
       } 
 
-     //create result(2x2)
-    vector<double> result(m * n, 0.0);
-    // operation
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-                m, n, k,
-                1.0, flatX.data(), k, 
-                flatY.data(), n,      
-                0.0, result.data(), n);
+     //create result(example in main is 2x2)
+      vector<double> result(m * n, 0.0);
+      // operation
+      cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                  m, n, k,
+                  1.0, flatX.data(), k, 
+                  flatY.data(), n,      
+                  0.0, result.data(), n);
 
-    //print output
-    for(int i = 0; i < m; ++i) {
-        for(int j = 0; j < n; ++j) {
-            cout << result[i * n + j] << " ";
+      //print output
+      for(size_t i = 0; i < m; ++i) {
+          for(size_t j = 0; j < n; ++j) {
+              cout << result[i * n + j] << " ";
+          }
+          cout <<endl;
         }
-        cout <<endl;
-      }
-
-      //check attributes:
-      cout<<"check attributes:"<<endl;
-      cout<<this->row_<<endl;
-      cout<<this->col_<<endl; 
-
 
     }
 
-
+  void sc_mul(double other){
     //https://developer.apple.com/documentation/accelerate/1513084-cblas_dscal
+    int rowxcol = this->row_ * this->col_;
 
-    void sc_mul(double other){
-
-      cout<<"scalar:"<<other<<endl;
-      int rowxcol = this->row_ * this->col_;
-      cout<<"rowxcol:"<<rowxcol<<endl;
-      //vector<double> result(rowxcol, 0.0);
-
-      //vector<vector<T> > output = data; 
-      cout<<"typeid(data).name(): "<<typeid(data[0][1]).name()<<endl; //vector
-
-      for (int i = 0; i < this->row_; ++i) {
-        cblas_dscal(this->col_, other, data[i].data(), 1);
-      }
-
-      
-        for (size_t i = 0; i < data.size(); ++i) { 
-            for (size_t j = 0; j < data[i].size(); ++j) { 
-                cout << data[i][j] << " "; 
-            }
-            cout << endl;
-        }
-      
-
-
-
-
-
+    for (size_t i = 0; i < this->row_; ++i) {
+      cblas_dscal(this->col_, other, data[i].data(), 1);
     }
+    
+    for (size_t i = 0; i < data.size(); ++i) { 
+      for (size_t j = 0; j < data[i].size(); ++j) { 
+        cout << data[i][j] << " "; 
+      }
+      cout << endl;
+    }
+
+  }
 
     
 
